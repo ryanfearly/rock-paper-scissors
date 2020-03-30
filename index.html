@@ -5,8 +5,24 @@
   <meta charset="UTF-8"/>
 </head>
 <body>
+  <h1>Roshambo vs. the Computer! First to 5 points wins!</h1>
+  <button id="rock">Rock</button>
+  <button id="paper">Paper</button>
+  <button id="scissors">Scissors</button>
+  <div>
+      <p id = "playerPoints">Player Points: 0</p>
+      <p id = "computerPoints">Computer Points: 0</p>
+      <p id = "draws">Draws: 0</p>
+      <p id = "lastRound" style = "color:red"></p>
+  </div>
   <script>
     
+    let playerWins = 0;
+    let computerWins = 0;
+    let draws = 0;
+    let roundResult;
+
+    //These two functions are the logic to play a round of the game
     function computerPlay() {
         playChoices = ['Rock', 'Paper', 'Scissors'];
         play = Math.floor(Math.random()* 3); //Should assign to 0, 1, or 2
@@ -14,38 +30,74 @@
     }
 
     function playRound (playerSelection, computerSelection) {
-        playerSelection = playerSelection[0].toUpperCase() + playerSelection.substr(-1*playerSelection.length + 1).toLowerCase(); //formats capitalization
         if (playerSelection == computerSelection) {
-            console.log(`The computer chooses ${computerSelection}. ${playerSelection} was a popular choice - it's a draw!`);
-            return 0;
+            roundResult = `The computer chooses ${computerSelection}. ${playerSelection} was a popular choice - it's a draw!`;
+            ++draws;
         } else if (
         (playerSelection == 'Paper' && computerSelection == 'Rock') || 
         (playerSelection == 'Rock' && computerSelection == 'Scissors') || 
         (playerSelection == 'Scissors' && computerSelection == 'Paper')) {
-            console.log(`The computer chooses ${computerSelection}. You win! ${playerSelection} beats ${computerSelection}!`);
-            return 1;
+            roundResult = `The computer chooses ${computerSelection}. You win! ${playerSelection} beats ${computerSelection}!`;
+            ++playerWins;
         } else if (
         (playerSelection == 'Paper' && computerSelection == 'Scissors') || 
         (playerSelection == 'Rock' && computerSelection == 'Paper') || 
         (playerSelection == 'Scissors' && computerSelection == 'Rock')) {
-            console.log(`The computer chooses ${computerSelection}. You lose! ${computerSelection} beats ${playerSelection}!`);
-            return -1;
-        } else console.log("Oops! Did you play the game correctly?");
+            roundResult = `The computer chooses ${computerSelection}. You lose! ${computerSelection} beats ${playerSelection}!`;
+            ++computerWins;
+        }
     }
 
-    function game() {
-        winCount = 0;
-        for(let i = 0; i < 5; i++) {
-            winCount = winCount + playRound(prompt('Choose your play', 'Rock, paper, or scissors?'), computerPlay());
-        }
+    //Sets up event listeners - probably could refactor with a loop    
+    rock = document.querySelector('#rock');
+    rock.addEventListener('click', () => {
+        playRound("Rock", computerPlay())
+        updateScore();
+    })
 
-        if (winCount > 0) {
-            console.log(`Congratulations, you won the game by ${winCount} rounds!`);
-        } else if (winCount < 0) {
-            console.log(`Bummer, you lost the game by ${winCount * -1} rounds!`);
-        } else if (winCount == 0) {
-            console.log(`We have a tie!`);
+    paper = document.querySelector('#paper');
+    paper.addEventListener('click', () => {
+        playRound("Paper", computerPlay())
+        updateScore();
+    })
+
+    scissors = document.querySelector('#scissors');
+    scissors.addEventListener('click', () => {
+        playRound("Scissors", computerPlay())
+        updateScore();
+    })
+
+    //Tracks the score and ends the game if one player reaches 5
+    function updateScore () {
+        document.querySelector('#playerPoints').textContent = `Player Points: ${playerWins}`;
+        document.querySelector('#computerPoints').textContent = `Computer Points: ${computerWins}`;
+        document.querySelector('#draws').textContent = `Draws: ${draws}`;
+        document.querySelector('#lastRound').textContent = roundResult;
+        if (playerWins == 5 || computerWins == 5) endGame();
+    }
+
+    function endGame() {
+        if (playerWins == 5) {
+            alert(`${roundResult} Which means...`)
+            alert(`Congratulations, you won the game! The final score is ${playerWins}-${computerWins}-${draws}!`);
+            resetGame();
+        } else if (computerWins == 5) {
+            alert(`${roundResult} Which means...`)
+            alert(`Too bad, you lost the game! The final score is ${playerWins}-${computerWins}-${draws}!`);
+            resetGame();
         }
+    }
+    
+    function resetGame () {
+        playerWins = 0;
+        computerWins = 0;
+        draws = 0;
+        roundResult = '';
+        
+        document.querySelector('#playerPoints').textContent = `Player Points: ${playerWins}`;
+        document.querySelector('#computerPoints').textContent = `Computer Points: ${computerWins}`;
+        document.querySelector('#draws').textContent = `Draws: ${draws}`;
+        document.querySelector('#lastRound').textContent = roundResult;
     }
 
     
